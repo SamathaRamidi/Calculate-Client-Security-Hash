@@ -63,16 +63,28 @@
       <AssemblyReference>UiPath.Core</AssemblyReference>
       <AssemblyReference>UiPath.Framework.Activities</AssemblyReference>
       <AssemblyReference>TimeSpan2</AssemblyReference>
+      <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
   <Sequence sap2010:Annotation.AnnotationText="Description: Open and initialize application as needed.&#xA;&#xA;Pre Condition: N/A&#xA;Post Condtion: Applications opened" DisplayName="Initialization Sequence" sap2010:WorkflowViewState.IdRef="Sequence_9">
+    <Sequence.Variables>
+      <Variable x:TypeArguments="ui:Browser" Name="AcmeSystem1Browser" />
+    </Sequence.Variables>
     <ui:LogMessage DisplayName="Log App Initialization message" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Info" Message="Opening applications..." />
-    <sads:DebugSymbol.Symbol>d3ZDOlxVc2Vyc1xtaWhhaS5kdW5hcmVhbnVcR29vZ2xlIERyaXZlXFdvcmtzcGFjZVxVaVBhdGhcVGVtcGxhdGVzXFVpUGF0aF9SRUZyYW1ld29ya1xGcmFtZXdvcmtcSW5pdEFsbEFwcGxpY2F0aW9ucy54YW1sA0QDRw4CAQFFBUWhAQIBAkWFAUWeAQIBAw==</sads:DebugSymbol.Symbol>
+    <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke workflow file" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_1" UnSafe="False" WorkflowFileName="System1_Login.xaml">
+      <ui:InvokeWorkflowFile.Arguments>
+        <InArgument x:TypeArguments="x:String" x:Key="in_System1_Url">[in_Config("System1_URL").ToString]</InArgument>
+        <InArgument x:TypeArguments="x:String" x:Key="in_Credential">[in_Config("System1_Credential").ToString]</InArgument>
+        <OutArgument x:TypeArguments="ui:Browser" x:Key="out_System1_Browser">[AcmeSystem1Browser]</OutArgument>
+      </ui:InvokeWorkflowFile.Arguments>
+    </ui:InvokeWorkflowFile>
+    <sads:DebugSymbol.Symbol>d25DOlxVaVBhdGhXb3JrXENhbGN1bGF0ZSBDbGllbnQgU2VjdXJpdHkgSGFzaFxDYWxjdWxhdGUgQ2xpZW50IFNlY3VyaXR5IEhhc2hcRnJhbWV3b3JrXEluaXRBbGxBcHBsaWNhdGlvbnMueGFtbAhFA1IOAgEBSQVJoQECAQpKBVAdAgECSYUBSZ4BAgELTUZNcAIBCE5PTmMCAQZMR0xqAgEESrEBSsUBAgED</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="LogMessage_1" sap:VirtualizedContainerService.HintSize="314.4,92.8" />
-      <sap2010:ViewStateData Id="Sequence_9" sap:VirtualizedContainerService.HintSize="336.8,293.6">
+      <sap2010:ViewStateData Id="LogMessage_1" sap:VirtualizedContainerService.HintSize="314,94.6666666666667" />
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_1" sap:VirtualizedContainerService.HintSize="314,86.6666666666667" />
+      <sap2010:ViewStateData Id="Sequence_9" sap:VirtualizedContainerService.HintSize="336,424">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -80,7 +92,7 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Initialization_1" sap:VirtualizedContainerService.HintSize="376.8,413.6" />
+      <sap2010:ViewStateData Id="Initialization_1" sap:VirtualizedContainerService.HintSize="376,544" />
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>
