@@ -1,0 +1,14 @@
+{
+  "name": "Calculate Client Security Hash",
+  "description": "Calculate Client Security Hash",
+  "main": "Main.xaml",
+  "dependencies": {},
+  "excludedData": [
+    "Private:*",
+    "*password*"
+  ],
+  "toolVersion": "18.2",
+  "projectVersion": "1.0.6837.22342",
+  "packOptions": {},
+  "runtimeOptions": {}
+}
