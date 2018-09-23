@@ -7,10 +7,13 @@
  xmlns:sap2010="http://schemas.microsoft.com/netfx/2010/xaml/activities/presentation"
  xmlns:scg="clr-namespace:System.Collections.Generic;assembly=mscorlib"
  xmlns:sco="clr-namespace:System.Collections.ObjectModel;assembly=mscorlib"
+ xmlns:sd="clr-namespace:System.Data;assembly=System.Data"
  xmlns:ui="http://schemas.uipath.com/workflow/activities"
  xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
   <x:Members>
     <x:Property Name="in_Config" Type="InArgument(scg:Dictionary(x:String, x:Object))" />
+    <x:Property Name="out_DataRow" Type="OutArgument(sd:DataRow[])" />
+    <x:Property Name="out_AcmeSystem1Browser" Type="OutArgument(ui:Browser)" />
   </x:Members>
   <mva:VisualBasic.Settings>
     <x:Null />
@@ -64,27 +67,59 @@
       <AssemblyReference>UiPath.Framework.Activities</AssemblyReference>
       <AssemblyReference>TimeSpan2</AssemblyReference>
       <AssemblyReference>System.Runtime.WindowsRuntime</AssemblyReference>
+      <AssemblyReference>System.Data.DataSetExtensions</AssemblyReference>
     </sco:Collection>
   </TextExpression.ReferencesForImplementation>
   <Sequence sap2010:Annotation.AnnotationText="Description: Open and initialize application as needed.&#xA;&#xA;Pre Condition: N/A&#xA;Post Condtion: Applications opened" DisplayName="Initialization Sequence" sap2010:WorkflowViewState.IdRef="Sequence_9">
     <Sequence.Variables>
-      <Variable x:TypeArguments="ui:Browser" Name="AcmeSystem1Browser" />
+      <Variable x:TypeArguments="sd:DataTable" Name="ExtractedWorkItemTable" />
     </Sequence.Variables>
     <ui:LogMessage DisplayName="Log App Initialization message" sap2010:WorkflowViewState.IdRef="LogMessage_1" Level="Info" Message="Opening applications..." />
-    <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" DisplayName="Invoke workflow file" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_1" UnSafe="False" WorkflowFileName="System1_Login.xaml">
+    <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" sap2010:Annotation.AnnotationText="Login  to System 1 using the URL and credential input argument.Throws incorrect credential and invokes SendExceptionEmail on Wrong credential.&#xA;&#xA;Precondition: None&#xA;Postcondition: Open Google Chrome System1 Dashboard if credential correct." DisplayName="Invoke workflow file" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_1" UnSafe="False" WorkflowFileName="System1_Login.xaml">
       <ui:InvokeWorkflowFile.Arguments>
         <InArgument x:TypeArguments="x:String" x:Key="in_System1_Url">[in_Config("System1_URL").ToString]</InArgument>
         <InArgument x:TypeArguments="x:String" x:Key="in_Credential">[in_Config("System1_Credential").ToString]</InArgument>
-        <OutArgument x:TypeArguments="ui:Browser" x:Key="out_System1_Browser">[AcmeSystem1Browser]</OutArgument>
+        <OutArgument x:TypeArguments="ui:Browser" x:Key="out_System1_Browser">[out_AcmeSystem1Browser]</OutArgument>
       </ui:InvokeWorkflowFile.Arguments>
     </ui:InvokeWorkflowFile>
-    <sads:DebugSymbol.Symbol>d25DOlxVaVBhdGhXb3JrXENhbGN1bGF0ZSBDbGllbnQgU2VjdXJpdHkgSGFzaFxDYWxjdWxhdGUgQ2xpZW50IFNlY3VyaXR5IEhhc2hcRnJhbWV3b3JrXEluaXRBbGxBcHBsaWNhdGlvbnMueGFtbAhFA1IOAgEBSQVJoQECAQpKBVAdAgECSYUBSZ4BAgELTUZNcAIBCE5PTmMCAQZMR0xqAgEESrEBSsUBAgED</sads:DebugSymbol.Symbol>
+    <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" sap2010:Annotation.AnnotationText="Navigate to the work item page&#xA;&#xA;Precondition:Dashboard Page Opened&#xA;Postcondition:Navigate to work item" DisplayName="Invoke workflow file" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_2" UnSafe="False" WorkflowFileName="Navigate_to_WorkItems.xaml">
+      <ui:InvokeWorkflowFile.Arguments>
+        <InArgument x:TypeArguments="ui:Browser" x:Key="in_AcmeBrowser">[out_AcmeSystem1Browser]</InArgument>
+      </ui:InvokeWorkflowFile.Arguments>
+    </ui:InvokeWorkflowFile>
+    <ui:InvokeWorkflowFile ContinueOnError="{x:Null}" sap2010:Annotation.AnnotationText="Extract a Data Table variable that holds all the Work Items in the System1 application&#xA;&#xA;Precondition:Available WorkItem Data&#xA;Postcondition: Extract all the available work items and filter the WI5 type later." DisplayName="Invoke workflow file" sap2010:WorkflowViewState.IdRef="InvokeWorkflowFile_3" UnSafe="False" WorkflowFileName="Extract_Data.xaml">
+      <ui:InvokeWorkflowFile.Arguments>
+        <InArgument x:TypeArguments="ui:Browser" x:Key="in_acmeBrowser">[out_AcmeSystem1Browser]</InArgument>
+        <OutArgument x:TypeArguments="sd:DataRow[]" x:Key="out_DataTable">[out_DataRow]</OutArgument>
+      </ui:InvokeWorkflowFile.Arguments>
+    </ui:InvokeWorkflowFile>
+    <sads:DebugSymbol.Symbol>d25DOlxVaVBhdGhXb3JrXENhbGN1bGF0ZSBDbGllbnQgU2VjdXJpdHkgSGFzaFxDYWxjdWxhdGUgQ2xpZW50IFNlY3VyaXR5IEhhc2hcRnJhbWV3b3JrXEluaXRBbGxBcHBsaWNhdGlvbnMueGFtbA9JA2EOAgEBTQVNoQECARROBVQdAgEMVQVZHQIBCFoFXx0CAQJNhQFNngECARVRRlFwAgESUk9SZwIBEFBHUGoCAQ5OzwNO4wMCAQ1XSVdhAgEKVcgCVeQCAgEJXElcYQIBBlqxA1rEAwIBBV1LXVgCAQM=</sads:DebugSymbol.Symbol>
   </Sequence>
   <sap2010:WorkflowViewState.ViewStateManager>
     <sap2010:ViewStateManager>
-      <sap2010:ViewStateData Id="LogMessage_1" sap:VirtualizedContainerService.HintSize="314,94.6666666666667" />
-      <sap2010:ViewStateData Id="InvokeWorkflowFile_1" sap:VirtualizedContainerService.HintSize="314,86.6666666666667" />
-      <sap2010:ViewStateData Id="Sequence_9" sap:VirtualizedContainerService.HintSize="336,424">
+      <sap2010:ViewStateData Id="LogMessage_1" sap:VirtualizedContainerService.HintSize="314,93" />
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_1" sap:VirtualizedContainerService.HintSize="314,211">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_2" sap:VirtualizedContainerService.HintSize="314,163">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="InvokeWorkflowFile_3" sap:VirtualizedContainerService.HintSize="314,195">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="IsAnnotationDocked">True</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
+      <sap2010:ViewStateData Id="Sequence_9" sap:VirtualizedContainerService.HintSize="336,982">
         <sap:WorkflowViewStateService.ViewState>
           <scg:Dictionary x:TypeArguments="x:String, x:Object">
             <x:Boolean x:Key="IsExpanded">True</x:Boolean>
@@ -92,7 +127,14 @@
           </scg:Dictionary>
         </sap:WorkflowViewStateService.ViewState>
       </sap2010:ViewStateData>
-      <sap2010:ViewStateData Id="Initialization_1" sap:VirtualizedContainerService.HintSize="376,544" />
+      <sap2010:ViewStateData Id="Initialization_1" sap:VirtualizedContainerService.HintSize="376,1102">
+        <sap:WorkflowViewStateService.ViewState>
+          <scg:Dictionary x:TypeArguments="x:String, x:Object">
+            <x:Boolean x:Key="ShouldExpandAll">True</x:Boolean>
+            <x:Boolean x:Key="ShouldCollapseAll">False</x:Boolean>
+          </scg:Dictionary>
+        </sap:WorkflowViewStateService.ViewState>
+      </sap2010:ViewStateData>
     </sap2010:ViewStateManager>
   </sap2010:WorkflowViewState.ViewStateManager>
 </Activity>
